@@ -1,0 +1,520 @@
+#########################################################################
+# 
+# APPENDIX S1
+# Biogeographic models
+#
+#########################################################################
+
+#########################################################################
+# APPENDIX S1.1
+#
+# Bayesian implementation of DEC in RevBayes (Landis et al., 2018). Script for the ancestral range reconstruction analysis performed in RevBayes using DEC with a simple, non-stratified model (M0) with equal dispersal rate over time.
+#
+# RevBayes Analysis: Bayesian inference of diversification rates under a
+#                    character-dependent birth-death model.
+#                    Here each transition rate between observed states is
+#                    drawn from an independent exponentially distributed 
+#                    rate. The transition rates between hidden states are
+#                    all equal and drawn from another exponentially 
+#                    distributed rate.
+#
+# Author: Isabel Sanmartín (based on Michael Landis Tutorial)
+##########################################################################
+
+#######################
+# Reading in the Data #
+#######################
+
+# Filenames
+range_fn = "data_esula_simple_M0/Esula_206sp.range.nex"
+tree_fn  = "data_esula_simple_M0/Esula_206sp.tre"
+out_fn   = "output_esula_simple_M0/output_10000gen_simple_M0"
+
+# Read binary (01) presence-absence range data
+dat_range_01 = readDiscreteCharacterData(range_fn)
+# Convert binary ranges into NaturalNumbers
+dat_range_n = formatDiscreteCharacterData(dat_range_01, "DEC")
+
+# Check data dimensions
+n_areas  = dat_range_01.nchar()
+n_states = floor(2^n_areas)
+
+# We are going to reduce the size of the Q matrix by applying constraints (no species lives in more than 3 areas).
+max_areas <- 3
+n_states <- 0
+for (k in 0:max_areas) n_states += choose(n_areas,k)
+
+# We want to record the relationship between range states and range labels when producing an ancestral range estimate figure. First, store the vector of range state descriptions.
+state_desc = dat_range_n.getStateDescriptions()
+
+# Write the state descriptions to a file using a loop function
+state_desc_str = "state,range\n"
+for (i in 1:state_desc.size())
+{
+    state_desc_str += (i-1) + "," + state_desc[i] + "\n"
+}
+write(state_desc_str, file=out_fn+".state_labels.txt")
+
+# Create a vector of movement proposals for MCMC
+moves = VectorMoves()
+monitors = VectorMonitors()
+n_gen = 10000
+# Build the Anagenetic component of the model: the CTMC Q matrix
+tree <- readTrees(tree_fn)[1]
+
+# Set the biogeographic rate parameter prior
+log10_rate_bg ~ dnUniform(-4,2)
+log10_rate_bg.setValue(-2)
+moves.append( mvScale(log10_rate_bg, weight=4) )
+
+# Convert the rate from log-scale to linear-scale with a deterministic node
+rate_bg := 10^log10_rate_bg
+
+# Because the rate matrix will describe the relative anagenetic event rates, we can safely assume that dispersal occurs at the relative (fixed) rate of one.
+dispersal_rate <- 1.0
+
+# We build the relative dispersal rate matrix
+for (i in 1:n_areas) {
+    for (j in 1:n_areas) {
+        dr[i][j] <- dispersal_rate
+    }
+}
+
+# Assign a prior distribution to the stochastic variable "relative extirpation rate" (or per-area extinction rates), and assign it a move
+log_sd <- 0.5
+log_mean <- ln(1) - 0.5*log_sd^2
+extirpation_rate ~ dnLognormal(mean=log_mean, sd=log_sd)
+moves.append( mvScale(extirpation_rate, weight=2) )
+
+# Build the relative extirpation rate matrix
+for (i in 1:n_areas) {
+    for (j in 1:n_areas) {
+        er[i][j] <- 0.0       
+    }
+    er[i][i] := extirpation_rate
+}
+
+# Build the DEC Q rate matrix given the instantaneous rate of dispersal and extinction anagenetic events along branches.
+Q_DEC := fnDECRateMatrix(dispersalRates=dr,
+                         extirpationRates=er,
+                         maxRangeSize=max_areas)
+
+# Building the Cladogenetic component of the model: range inheritance scenarios
+clado_event_types <- [ "s", "a"]
+#clado_event_probs <- simplex(1,1)
+
+# We assign a simplex that sums to 1, but the proportion of the prior for each event is different.
+p_sympatry ~ dnUniform(0,1)
+p_allopatry := abs(1.0 - p_sympatry)
+clado_type_probs := simplex(p_sympatry, p_allopatry)
+moves.append( mvSlide(p_sympatry, weight=2) )
+
+# Build the DEC cladogenetic model
+P_DEC := fnDECCladoProbs(eventProbs=clado_type_probs,
+                         eventTypes=clado_event_types,
+                         numCharacters=n_areas,
+                         maxRangeSize=max_areas)
+
+# Construct the phylogenetic CTMC with cladogenetic events
+m_bg ~ dnPhyloCTMCClado(tree=tree,
+                           Q=Q_DEC,
+                           cladoProbs=P_DEC,
+                           branchRates=rate_bg,
+                           type="NaturalNumbers",
+                           nSites=1)
+# Attach the range data
+m_bg.clamp(dat_range_n)
+
+############
+# Monitors #
+############
+
+monitors.append( mnScreen(printgen=100, rate_bg, extirpation_rate) )
+monitors.append( mnModel(file=out_fn+".model.log", printgen=10) )
+monitors.append( mnFile(tree, filename=out_fn+".tre", printgen=10) )
+monitors.append( mnJointConditionalAncestralState(tree=tree,
+                                                  ctmc=m_bg,
+                                                  type="NaturalNumbers",
+                                                  withTips=true,
+                                                  withStartStates=true,
+                                                  filename=out_fn+".states.log",
+                                                  printgen=10) )
+monitors.append( mnStochasticCharacterMap(ctmc=m_bg,
+                                          filename=out_fn+".stoch.log",
+                                          printgen=10) )
+############
+# Analysis #
+############
+
+# Build the model analysis object from the model graph
+mymodel = model(m_bg)
+
+# Create the MCMC analysis object
+mymcmc = mcmc(mymodel, monitors, moves)
+
+# Run the MCMC analysis
+mymcmc.run(n_gen)
+
+##############################################################################
+# Bayes Factor Comparison: Include code for path and stepping-stone sampling #
+##############################################################################
+
+# Compute power posterior distributions
+pow_p = powerPosterior(mymodel, moves, monitors, "outputPPsimple/pow_p_DEC_simple_BF.out", cats=50, sampleFreq=10)
+# pow_p.burnin(generations=1000, tuningInterval=100)
+pow_p.run(generations=1000)
+
+# Use path-sampling to calculate marginal likelihoods
+ps = pathSampler(file="outputPPsimple/pow_p_DEC_simple_BF.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ps.marginal()
+
+# Use stepping-stone sampling to calculate marginal likelihoods
+ss = steppingStoneSampler(file="outputPPsimple/pow_p_DEC_simple_BF.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss.marginal()
+
+# q()
+
+#####################################################
+# Summarize ancestral states for Stochastic Mapping #
+#####################################################
+
+# Read trees
+T = readTrees("/Users/asm/Downloads/Simple_M0_ordenado/stocastich_M0_ordenado/Esula_206sp_ordenado.tre")[1]
+burnin=0.2
+n_time_slices = 500
+
+# Read in the sampled character histories
+anc_states_SCHM = readAncestralStateTrace("/Users/asm/Downloads/Simple_M0_ordenado/stocastich_M0_ordenado/output_ordenado/output_10000gen_simple_M0_ordenado.stoch.log")
+
+# summarizeCharacterMaps(anc_states, T, file="/Users/asm/Downloads/Simple_M0_ordenado/stocastich_M0_ordenado/output_ordenado/events.csv", burnin=0.1)
+
+# Make summary tree
+char_map_tree = characterMapTree(tree=T, 
+                 ancestral_state_trace_vector=anc_states_SCHM, 
+                 character_file="/Users/asm/Downloads/Simple_M0_ordenado/stocastich_M0_ordenado/output-stochastic_ordenado/simple_marginal_character_ordenado.tree", 
+                 posterior_file="/Users/asm/Downloads/Simple_M0_ordenado/stocastich_M0_ordenado/output-stochastic_ordenado/simple_marginal_posterior_ordenado.tree", 
+                 burnin=burnin, 
+                 num_time_slices=n_time_slices)
+
+# q()
+
+
+
+##########################################################################
+# APPENDIX S1.2
+# Script for the ancestral range reconstruction analysis performed in RevBayes using DEC with a time-stratified model (M1) with four epochs or time slices (TS) with different transition probabilities matrices.
+#
+# RevBayes Analysis: Bayesian inference of diversification rates under a
+#                    character-dependent birth-death model.
+#                    Here each transition rate between observed states is
+#                    drawn from an independent exponentially distributed 
+#                    rate. The transition rates between hidden states are
+#                    all equal and drawn from another exponentially 
+#                    distributed rate.
+#
+# Author: Isabel Sanmartín (based on Michael Landis Tutorial)
+##########################################################################
+
+#######################
+# Reading in the Data #
+#######################
+
+# Filenames
+range_fn = "data_esula_stratified_M1/Esula_206sp.range.nex"
+tree_fn  = "data_esula_stratified_M1/Esula_206sp.tre"
+out_fn   = "output_esula_stratified_M1/output_10000gen_epoch-nodist_ML_stratified_M1"
+geo_fn   = "data_esula_stratified_M1/Esula.n5"
+times_fn = geo_fn + ".times.txt"
+#dist_fn  = geo_fn + ".distances.txt"
+
+# Read binary (01) presence-absence range data
+dat_range_01 = readDiscreteCharacterData(range_fn)
+
+# Convert binary ranges into NaturalNumbers
+dat_range_n = formatDiscreteCharacterData(dat_range_01, "DEC")
+
+# Check size of each vector
+dat_range_n.size()
+dat_range_01.size()
+
+# Compare characters for two taxa
+dat_range_01[1]
+dat_range_n[1]
+
+# Data dimensions
+n_areas  = dat_range_01.nchar()
+n_states = floor(2^n_areas)
+
+#There are 32 ranges or states for 5 areas (2exp(5)). We are going to reduce the size of the Q matrix by applying constraints (no species lives in more than 3 areas).
+max_areas <- 3
+n_states <- 0
+for (k in 0:max_areas) n_states += choose(n_areas,k)
+
+# Now number of states (n_states) is 22: equivalent to a sum of combinatorial elements (6 "chooses" 1 + 6 "chooses" 2)
+# Notice that "empty range" is a state in the model!! So we have 22 instead of 21
+# Then use the new "n_states" to format the dataset for the reduced state space
+
+dat_range_n = formatDiscreteCharacterData(dat_range_01, "DEC", n_states)
+
+# Get the converted state descriptions (OBS: The sample.txt does not consider max_size argument) 
+state_desc = dat_range_n.getStateDescriptions()
+
+# Write the state descriptions to file
+state_desc_str = "state,range\n"
+for (i in 1:state_desc.size())
+{
+    state_desc_str += (i-1) + "," + state_desc[i] + "\n"
+}
+write(state_desc_str, file=out_fn+".state_labels.txt")
+
+# Helper variables
+moves = VectorMoves()
+monitors = VectorMonitors()
+n_gen = 10000
+
+###############
+# Tree models #
+###############
+
+# Read tree
+tree <- readTrees(tree_fn)[1]
+
+##################################
+# Epoch, connectivity, distances #
+##################################
+
+# Epoch times
+time_bounds <- readDataDelimitedFile(file=times_fn, delimiter=" ")
+n_epochs <- time_bounds.nrows() # changes this to number of timeslices
+
+# Epoch connectivity
+for (i in 1:n_epochs) {
+    epoch_fn = geo_fn + ".connectivity." + i + ".txt"
+    connectivity[i] <- readDataDelimitedFile(file=epoch_fn, delimiter=" ")
+}
+
+# Area distances
+#distances <- readDataDelimitedFile(file=dist_fn, delimiter=" ")
+
+#######################
+# Biogeography models #
+#######################
+
+# Set the biogeographic event rate multiplier. This assigns the migration rate baseline for the dispersal and extinction rate instantaneous Q matrix.
+# In the tutorial example, this is set to be quite broad or uninformative. "range_bg" is set as a uniform distribution bounded 
+# between 0.0001 (10exp(-4)) and 100 (10exp(2)), with an initial value of 0.01 (10exp(-2)).
+# Here, we are going to use narrower, biologically more realistic priors. This is also important to avoid numerical overflow in estimating
+# Bayes Factors by path sampling: as the sampler gets closer to the prior and further away from the posterior, where the data stops being informative,
+# the combination of parameter values sampled from the prior becomes more "unlikely", which results in extremely low likelihoods even after
+# log scaling, and eventually in numerical overflow. 
+# To establish more realistic priors, we use the posterior estimates from an initial, test analysis with broader priors.
+
+rate_bg ~ dnLoguniform(1E-4,1E-1)
+rate_bg.setValue(1E-2)
+moves.append( mvScale(rate_bg, weight=4) )
+
+# The relative dispersal rate
+dispersal_rate <- 1.0
+
+####################### changed from epoch model #######################
+# The geographical distance scaling factor. The "distance_scale" parameter (a) is used 
+# below to scale the baseline dispersal rate by the inverse of the geographic distance.
+# If (a) is 0 (no scaling), then the dispersal rate is equal for all areas.
+# This code below can be commented out if no distance correction is applied.
+
+#distance_scale ~ dnUnif(0,20)
+#distance_scale.setValue(0.01)
+#moves[mvi++] = mvScale(distance_scale, weight=3)
+
+# Create the dispersal rate matrix. If there is distance correction, use line dr[i][j][k] <- dispersal_rate.
+# WRONG!!!! The following code is WRONG!! It WILL REPLACE CONNECTIVITY BY 1.00, NO SCALING APPLIED!!
+
+#for (i in 1:n_epochs) {
+#    for (j in 1:n_areas) {
+#        for (k in 1:n_areas) {
+#            dr[i][j][k] <- 0.0
+#            if (connectivity[i][j][k] > 0) {
+#                #dr[i][j][k] := dispersal_rate * exp(-distance_scale * distances[j][k])
+#                dr[i][j][k] <- dispersal_rate
+#            }
+#        }
+#    }
+#}
+
+# Create the dispersal rate matrix WITH CONNECTIVITY APPLIED. 
+# If there is distance correction, uncomment dr[i][j][k] := dispersal_rate * exp(-distance_scale * distances[j][k]) and uncomment next line
+# If there is no distance correction, use line dr[i][j][k] := dispersal_rate * (connectivity[i][j][k])
+# so that the 1.0 values in dr are replaced by the connectivity scaling values.
+
+for (i in 1:n_epochs) {
+    for (j in 1:n_areas) {
+        for (k in 1:n_areas) {
+            dr[i][j][k] <- 0.0
+            if (connectivity[i][j][k] > 0) {
+                dr[i][j][k] := dispersal_rate * (connectivity[i][j][k])
+            }
+                
+            }
+        }
+    }
+
+# Then the relative extirpation rate (or per-area extinction rates)
+# We create a log normal prior with SD = 0.5 and log mean = -0.125,  95% range (0.388, 2.01) Median=0.882
+# log_sd <- 0.5
+# log_mean <- ln(1) - 0.5*log_sd^2
+
+# This places a extinction rate mean too low. We can use a prior that best approximate the posterior in trial runs with broader priors.
+# For example, Tracer gives for the posterior Mean = 1.5 and median = 1.2, 95% range = 0.29-3.43, value range = 0.21-7.17
+log_sd <- 0.5
+log_mean <- 0.0
+
+extirpation_rate ~ dnLognormal(mean=log_mean, sd=log_sd)
+moves.append( mvScale(extirpation_rate, weight=2) )
+
+####################### Changed from Epoch Model #######################
+
+# The extirpation rate matrix
+for (i in 1:n_epochs) {
+    for (j in 1:n_areas) {
+        for (k in 1:n_areas) {
+            er[i][j][k] <- 0.0
+        }
+        er[i][j][j] := extirpation_rate
+    }
+}
+
+# Build DEC rate matrices
+# for (i in 1:n_epochs) {
+for (i in n_epochs:1) {
+    Q_DEC[i] := fnDECRateMatrix(dispersalRates=dr[i],
+                                extirpationRates=er[i],
+                                maxRangeSize=max_areas)
+}
+
+# Build the times
+for (i in 1:n_epochs) {
+    time_max[i] <- time_bounds[i][1]
+    time_min[i] <- time_bounds[i][2]
+
+    if (i == n_epochs) {
+        epoch_times[i] <- 0.0
+    } else {
+        epoch_times[i] ~ dnUniform(time_min[i], time_max[i])
+        moves.append( mvSlide(epoch_times[i], delta=(time_max[i]-time_min[i])/2) )
+    }
+}
+
+# Combine the epoch rate matrices and times
+Q_DEC_epoch := fnEpoch(Q=Q_DEC, times=epoch_times, rates=rep(1, n_epochs))
+
+####################### Changed from Epoch Model #######################
+
+# Build cladogenetic transition probabilities. Only sympatry (wide or peripatry, narrow) and allopatry (vicariance) are allowed.
+# We assign a flat fixed prior through a simplex (same probability for the two events)
+clado_event_types <- [ "s", "a" ]
+#clado_type_probs <- simplex(1, 1)
+
+# Another possibility is to assign a simplex that sums to 1, but the proportion of the prior for each event is different.
+p_sympatry ~ dnUniform(0,1)
+p_allopatry := abs(1.0 - p_sympatry)
+clado_type_probs := simplex(p_sympatry, p_allopatry)
+moves.append( mvSlide(p_sympatry, weight=2) )
+
+P_DEC := fnDECCladoProbs(eventProbs=clado_type_probs,
+                         eventTypes=clado_event_types,
+                         numCharacters=n_areas,
+                         maxRangeSize=max_areas)
+
+# The Epoch Model requires to assign Root frequencies
+# In our model, all ancestral ranges are equally likely for the root
+# First, populate the root matrix with "1"
+rf_DEC_tmp    <- rep(1, n_states)
+
+#Then, assign a simplex (equal probability) to all elements 
+rf_DEC    <- simplex(rf_DEC_tmp)
+
+# Construct the phylogenetic CTMC with cladogenetic events
+m_bg ~ dnPhyloCTMCClado(tree=tree,
+                           Q=Q_DEC_epoch,
+                           cladoProbs=P_DEC,
+                           branchRates=rate_bg,
+                           rootFrequencies=rf_DEC,
+                           type="NaturalNumbers",
+                           nSites=1)
+    
+# Attach the range data
+m_bg.clamp(dat_range_n)
+
+############
+# Monitors #
+############
+
+monitors.append( mnScreen(printgen=100, rate_bg, extirpation_rate, p_sympatry) )
+monitors.append( mnModel(file=out_fn+".model.log", printgen=10) )
+monitors.append( mnFile(tree, filename=out_fn+".tre", printgen=10) )
+monitors.append( mnJointConditionalAncestralState(tree=tree,
+                                                  ctmc=m_bg,
+                                                  type="NaturalNumbers",
+                                                  withTips=true,
+                                                  withStartStates=true,
+                                                  filename=out_fn+".states.log",
+                                                  printgen=10) )
+monitors.append( mnStochasticCharacterMap(ctmc=m_bg,
+                                          filename=out_fn+".stoch.log",
+                                          printgen=100) )
+
+############
+# Analysis #
+############
+
+# Build the model analysis object from the model graph
+mymodel = model(m_bg)
+
+# Create the MCMC analysis object
+mymcmc = mcmc(mymodel, monitors, moves)
+
+# Run the MCMC analysis
+mymcmc.run(n_gen)
+
+##############################################################################
+# Bayes Factor Comparison: Include code for path and stepping-stone sampling #
+##############################################################################
+
+# Compute power posterior distributions
+pow_p = powerPosterior(mymodel, moves, monitors, "outputPPepoch/pow_p_DEC_epoch_ML.out", cats=50, sampleFreq=10) 
+# pow_p.burnin(generations=1000, tuningInterval=100)
+pow_p.run(generations=1000)  
+
+# Use path-sampling to calculate marginal likelihoods
+ps = pathSampler(file="outputPPepoch/pow_p_DEC_epoch_ML.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ps.marginal() 
+
+# Use stepping-stone sampling to calculate marginal likelihoods
+ss = steppingStoneSampler(file="outputPPepoch/pow_p_DEC_epoch_ML.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss.marginal() 
+
+# q()
+
+#####################################################
+# Summarize ancestral states for Stochastic Mapping #
+#####################################################
+
+# Read trees
+T = readTrees("/Users/asm/Downloads/Stratified_M1_ordenado/stocastich_M1_ordenado/Esula_206sp_ordenado.tre")[1]
+burnin=0.2
+n_time_slices = 500
+
+# Read in the sampled character histories
+anc_states_SCHM = readAncestralStateTrace("/Users/asm/Downloads/Stratified_M1_ordenado/stocastich_M1_ordenado/output_ordenado/output_10000gen_epoch-nodist_ML_stratified_M1_ordenado.stoch.log")
+
+# summarizeCharacterMaps(anc_states, T, file="/Users/asm/Downloads/Stratified_M1_ordenado/stocastich_M1_ordenado/output_ordenado/events.csv", burnin=0.1)
+
+# Make summary tree
+char_map_tree = characterMapTree(tree=T, 
+                 ancestral_state_trace_vector=anc_states_SCHM, 
+                 character_file="/Users/asm/Downloads/Stratified_M1_ordenado/stocastich_M1_ordenado/output-stochastic_ordenado/stratified_marginal_character_ordenado.tree", 
+                 posterior_file="/Users/asm/Downloads/Stratified_M1_ordenado/stocastich_M1_ordenado/output-stochastic_ordenado/stratified_marginal_posterior_ordenado.tree", 
+                 burnin=burnin, 
+                 num_time_slices=n_time_slices)
+
+# q()
