@@ -1,0 +1,308 @@
+#NEXUS
+begin taxa;
+	dimensions ntax=206;
+	taxlabels
+	1Aantso
+	1Cpachys
+	1Despino
+	A1Maleppic
+	A1Mcrasped2
+	A1Mfontquer1
+	A1Mmarschal1
+	A1Mmonostyla_1
+	A1Mmyrsin1
+	A1Mrigida2
+	A1Mspiniden2
+	A1P_ARVnormannii_1
+	A1Pacanthod1
+	A1Pbarreli3
+	A1Pboetica2
+	A1Pcassia1
+	A1Pcheirad1
+	A1Perythrad1
+	A1Perythrodon_1
+	A1Pfalcata1
+	A1Pgaillard1
+	A1Pgedrosi1
+	A1Pgypsico1
+	A1Phumilis1
+	A1Pkopetdag3
+	A1Pmalleata1
+	A1Pmatriten1
+	A1Pmicrosci1
+	A1Pnicician1
+	A1Ppetrophi1
+	A1Ppithyusa3
+	A1Pplebeia1
+	A1Ppolycaul1
+	A1Pprolif1
+	A1Psahendi1
+	A1Psaxatil1
+	A1Psegueri1
+	A1Pspartif1
+	ARE2buhsei1
+	ARE2cypoides1
+	ARE2emirnens1
+	ARE2furcatif1
+	ARE2gayi_1
+	ARE2genisto2
+	ARE2graminif_1
+	ARE2natalen1
+	ARE2pamiric_1
+	ARE2rothiana2
+	ARE2tommasin_1
+	AREagraria4
+	AREaustro_iranica_1
+	AREcaesia_1
+	AREdiscolor2
+	AREdubovik1
+	AREesula12
+	AREhebecarp1
+	AREiberica4
+	AREjaxartic1
+	AREkansui_1
+	AREkhabrica1
+	ARElatifol1
+	AREleptocau1
+	ARElucida_1
+	AREmaglicen1
+	AREmicrocar1
+	AREmongoliensis_1
+	AREosyridea_1
+	AREsiebold1
+	AREsubtilis1
+	AREtshuens1
+	AREuralens1
+	AREvallinia1
+	AREvariabil1
+	AREvirgata10
+	ARVarvalis1
+	ARVaulacosAPal
+	ARVfranchetR
+	ARVsulcata2
+	F1Aazorica1
+	F1Adeflexa1
+	F1Amaresii_1
+	F1Aparalias3
+	F1Ataurinen1
+	F1Atrichot1
+	F1Baustrot1
+	F1Bchamaep
+	F1Bchamaesula_1
+	F1Bcommutat1
+	F1Bcressoides_1
+	F1Bherniari1
+	F1Bisaurica1
+	F1Bivanjohnstonii_1
+	F1Bnesomii
+	F1Bouachitana_1
+	F1Bpeplus3
+	F1Btuerkheimii
+	GUA2berotica1
+	GUA2bourgae1
+	GUA2calamifo1
+	GUA2gossypin2
+	GUA2lamarckii_1
+	GUA2papilion1
+	GUA2stolonif2
+	GUA2tuckeyan1
+	GUA3aserbajd1
+	GUA3aucheri1
+	GUA3consangu1
+	GUA3deltobra1
+	GUA3densa1
+	GUA3densiusc1
+	GUA3inderien2
+	GUA3kanaori1
+	GUA3sororia_1
+	GUA4characia6
+	GUA4heldreichii_MN954390
+	GUA5alaica2
+	GUA5heterad2
+	GUA5retusa1
+	GUA5serrata3
+	GUA6calyptra3
+	GUA6connata1
+	GUA7bungei2
+	GUA7caeladen1
+	GUA7ferdowsiana_1_Euphorbia_sp
+	GUA7grosshei1
+	GUA7schugnan1
+	GUA7sclerocy1
+	GUA7tibetica2
+	GUA7turkesta
+	GUAbiumbell2
+	GUAbriqueti1
+	GUAdendroid2
+	GUAdracunc1
+	GUAexigua5
+	GUAguyonian1
+	GUAmedicaginea_1
+	GUArimarum1
+	GUAterracin5
+	HE2adenoch1
+	HE2alatav1
+	HE2alpina2
+	HE2angulata4
+	HE2aristata1
+	HE2capitula1
+	HE2cashmeri1
+	HE2depauper1
+	HE2dulcis4
+	HE2dumalis1
+	HE2eugeniae1
+	HE2fragifer2
+	HE2hyberna1
+	HE2jolkinii2
+	HE2lamproca2
+	HE2lucorum1
+	HE2macrocar2
+	HE2mazand1
+	HE2micracti1
+	HE2oblongat1
+	HE2orienta1
+	HE2procera1
+	HE2purpurea1
+	HE2pyrenaic1
+	HE2stygiana1
+	HE2subamplx1
+	HE2talastav1
+	HE2texana1
+	HELbivonae_1
+	HELlemesiana_1
+	HEakenocar3
+	HEaltaica2
+	HEapios1
+	HEarguta1
+	HEcarniol1
+	HEcondyloc2
+	HEconiosp1
+	HEeriophor1
+	HEfistulos1
+	HEgrisophyPah
+	HEheliosc6
+	HEhirsuta2
+	HEmicrosph1
+	HEmonteneg1
+	HEnereidum1
+	HEplatyph1
+	HEpolygali1
+	HEpterococ2
+	HErhabdot1
+	HEspinosa8
+	HEsquamig2
+	HEstricta1
+	HEvalerian1
+	HEvelenovs3
+	HOebracteo1
+	HOferganen1
+	HOfischeriana_1
+	HOhimalayensis_1
+	HOisatidif3
+	HOrapulum1
+	HOrupestr2
+	HOsarawsc1
+	HOspeciesWen2
+	HOstrachey3
+	HOwallich1
+	LAGlagascae1
+	LAGphymato2
+	LATlathyris1
+;
+end;
+
+begin trees;
+	tree tree_1 = [&R] ((1Aantso:42.977101,(1Cpachys:33.688697,1Despino:33.688697):9.288404):4.208077,((LATlathyris1:34.072956,(LAGlagascae1:20.062315,LAGphymato2:20.062315):14.01064):6.674596,(((HOsarawsc1:10.376475,((HOwallich1:4.248414,(HOhimalayensis_1:2.519004,HOstrachey3:2.519004):1.72941):2.400862,(HOspeciesWen2:6.120025,(HOebracteo1:5.063781,((HOrupestr2:2.860987,HOfischeriana_1:2.860987):1.879501,(HOrapulum1:4.068326,(HOisatidif3:3.21316,HOferganen1:3.21316):0.855166):0.672162):0.323293):1.056244):0.529251):3.727199):14.187186,(HEconiosp1:20.374023,((HEeriophor1:5.034069,(HEarguta1:4.059253,HEfistulos1:4.059253):0.974816):10.578936,((HErhabdot1:8.047758,HEheliosc6:8.047758):6.712376,(((HEgrisophyPah:6.762558,(HEaltaica2:3.418919,HEcarniol1:3.418919):3.343639):4.906213,(HEpterococ2:7.718819,(HEnereidum1:5.972744,(HEpolygali1:5.673819,HEhirsuta2:5.673819):0.298925):1.746075):3.949952):1.666337,((HEapios1:4.106431,HEcondyloc2:4.106431):6.8312,(((HEakenocar3:4.515375,(HEstricta1:2.700285,(HEvalerian1:2.024713,(HEplatyph1:0.538441,HEmicrosph1:0.538441):1.486272):0.675573):1.815089):3.636283,((HEsquamig2:3.568293,HEmonteneg1:3.568293):1.580177,(HEspinosa8:4.495825,(HELbivonae_1:2.953642,HELlemesiana_1:2.953642):1.542184):0.652645):3.003187):1.264429,(HEvelenovs3:8.43927,((HE2orienta1:5.507556,(HE2texana1:4.493935,HE2oblongat1:4.493935):1.013621):1.387956,(HE2capitula1:6.558899,(((HE2stygiana1:4.689265,(HE2alatav1:3.018831,HE2eugeniae1:3.018831):1.670433):0.85696,(HE2purpurea1:5.101524,(HE2macrocar2:4.272614,(HE2depauper1:2.619307,HE2dumalis1:2.619307):1.653307):0.82891):0.444701):0.855399,((HE2pyrenaic1:4.826821,(HE2jolkinii2:3.798103,(HE2adenoch1:3.293248,(HE2lucorum1:2.555218,HE2micracti1:2.555218):0.738029):0.504855):1.028718):0.835891,((HE2hyberna1:4.108567,HE2fragifer2:4.108567):1.147066,(HE2mazand1:4.971582,(HE2dulcis4:4.400499,(HE2angulata4:4.116282,((HE2subamplx1:3.00861,(HE2cashmeri1:2.571629,HE2talastav1:2.571629):0.436981):0.467525,(HE2procera1:2.722874,(HE2alpina2:2.365609,(HE2lamproca2:1.389293,HE2aristata1:1.389293):0.976316):0.357264):0.753261):0.640147):0.284217):0.571083):0.284051):0.407079):0.738912):0.157275):0.336613):1.543758):0.976817):1.521545):2.397476):1.425026):0.852872):4.761018):4.189638):13.078303,(((A1Maleppic:11.796786,(A1P_ARVnormannii_1:8.02729,(A1Mcrasped2:3.301532,((A1Mmarschal1:0.946629,A1Mspiniden2:0.946629):1.643653,(A1Mrigida2:2.070581,(A1Mmyrsin1:1.779178,(A1Mfontquer1:1.559414,A1Mmonostyla_1:1.559414):0.219764):0.291403):0.519701):0.71125):4.725759):3.769496):11.632268,((A1Ppithyusa3:5.278398,(A1Pgaillard1:2.325957,A1Pcassia1:2.325957):2.952442):7.666901,((A1Pfalcata1:8.970418,A1Pboetica2:8.970418):2.643048,((A1Perythrad1:5.248524,(A1Pprolif1:4.093645,(A1Pplebeia1:3.077115,(A1Pgedrosi1:2.483324,A1Pspartif1:2.483324):0.59379):1.01653):1.15488):4.000648,((A1Pgypsico1:2.640869,(A1Pmicrosci1:1.725228,A1Psahendi1:1.725228):0.91564):5.492845,((A1Pmatriten1:4.711514,(A1Pcheirad1:4.173438,(A1Ppolycaul1:3.472323,(A1Pacanthod1:2.839601,(A1Pmalleata1:1.687166,A1Pkopetdag3:1.687166):1.152435):0.632722):0.701115):0.538076):1.974637,(A1Psegueri1:3.842912,((A1Perythrodon_1:2.504257,A1Ppetrophi1:2.504257):0.915279,(A1Pbarreli3:2.870027,(A1Phumilis1:1.967654,(A1Pnicician1:1.256092,A1Psaxatil1:1.256092):0.711562):0.902374):0.549509):0.423376):2.843239):1.447563):1.115459):2.364293):1.331834):10.483756):9.923572,((GUA7sclerocy1:12.130718,((GUA7tibetica2:4.489646,GUA7schugnan1:4.489646):1.895061,((GUA7ferdowsiana_1_Euphorbia_sp:1.526925,GUA7bungei2:1.526925):3.328005,(GUA7caeladen1:3.140275,(GUA7turkesta:1.953599,GUA7grosshei1:1.953599):1.186676):1.714654):1.529777):5.746011):17.544719,((GUA6calyptra3:13.627084,GUA6connata1:13.627084):14.212916,((GUA5retusa1:13.20831,(GUA5serrata3:6.669454,(GUA5alaica2:3.004927,GUA5heterad2:3.004927):3.664527):6.538856):12.929069,(((GUA4heldreichii_MN954390:2.458691,GUA4characia6:2.458691):14.348862,(((GUA3deltobra1:1.689346,GUA3aucheri1:1.689346):10.614153,((GUA3densiusc1:5.680916,GUA3densa1:5.680916):1.61833,(GUA3consangu1:3.890096,(GUA3kanaori1:3.520255,(GUA3aserbajd1:2.246721,(GUA3sororia_1:0.737844,GUA3inderien2:0.737844):1.508878):1.273534):0.369841):3.409149):5.004254):3.196858,(GUAexigua5:13.18418,((GUAmedicaginea_1:10.044482,((GUAbriqueti1:3.593914,GUAbiumbell2:3.593914):5.777742,(GUAguyonian1:8.010562,(GUAdendroid2:4.082708,GUAterracin5:4.082708):3.927854):1.361094):0.672826):2.223802,((GUArimarum1:3.455576,GUAdracunc1:3.455576):6.678626,(GUA2tuckeyan1:5.744992,((GUA2bourgae1:3.760898,GUA2lamarckii_1:3.760898):1.345371,((GUA2berotica1:2.612051,GUA2stolonif2:2.612051):1.098181,(GUA2papilion1:3.077569,(GUA2gossypin2:2.879943,GUA2calamifo1:2.879943):0.197626):0.632663):1.396036):0.638724):4.38921):2.134081):0.915896):2.316178):1.307195):5.210899,((((F1Adeflexa1:2.478707,F1Ataurinen1:2.478707):3.426985,(F1Atrichot1:4.199299,(F1Aazorica1:2.684264,(F1Amaresii_1:2.082955,F1Aparalias3:2.082955):0.601309):1.515034):1.706393):9.768962,((F1Bherniari1:7.000173,F1Bisaurica1:7.000173):3.437277,((F1Bchamaep:4.233334,F1Bpeplus3:4.233334):2.221451,((F1Bcommutat1:3.308441,(F1Bouachitana_1:2.479375,F1Baustrot1:2.479375):0.829066):1.359569,((F1Bchamaesula_1:2.694201,F1Bcressoides_1:2.694201):0.95401,(F1Bnesomii:3.369175,(F1Btuerkheimii:2.899683,F1Bivanjohnstonii_1:2.899683):0.469493):0.279036):1.019799):1.786775):3.982665):5.237204):4.483178,(((ARVfranchetR:5.108878,ARVsulcata2:5.108878):2.185835,(ARVarvalis1:5.300746,ARVaulacosAPal:5.300746):1.993967):4.165779,(AREkansui_1:6.902242,((AREkhabrica1:4.425248,(ARE2buhsei1:2.203076,(AREosyridea_1:1.05392,AREaustro_iranica_1:1.05392):1.149156):2.222172):2.089296,(((AREtshuens1:3.367416,ARE2gayi_1:3.367416):1.891096,((ARE2natalen1:3.186507,ARE2genisto2:3.186507):1.792417,(AREsiebold1:3.601726,(ARE2cypoides1:3.405138,(ARE2rothiana2:2.582369,(ARE2emirnens1:2.225429,ARE2furcatif1:2.225429):0.35694):0.822769):0.196588):1.377199):0.279588):0.746368,(AREvallinia1:5.705713,(AREvariabil1:4.870437,(ARElucida_1:3.780043,((ARE2pamiric_1:2.464673,(AREuralens1:2.145848,((AREdiscolor2:1.589536,(AREleptocau1:0.569727,AREsubtilis1:0.569727):1.019809):0.290257,(AREmaglicen1:1.285161,(AREcaesia_1:0.200225,AREagraria4:0.200225):1.084936):0.594632):0.266055):0.318825):0.96357,((AREvirgata10:1.282542,AREjaxartic1:1.282542):1.638133,((AREiberica4:2.501574,(AREhebecarp1:2.350041,AREdubovik1:2.350041):0.151533):0.231258,(AREesula12:2.320516,(AREmongoliensis_1:1.648314,(ARE2graminif_1:1.469796,(AREmicrocar1:1.043488,(ARElatifol1:0.542293,ARE2tommasin_1:0.542293):0.501195):0.426308):0.178518):0.672202):0.412316):0.187843):0.507568):0.3518):1.090394):0.835275):0.299168):0.509664):0.387698):4.558251):8.697339):1.86062):4.118928):1.70262):1.835437):3.67719):4.289337):3.105588):6.437626);
+end;
+
+begin figtree;
+	set appearance.backgroundColorAttribute="Default";
+	set appearance.backgroundColour=#ffffff;
+	set appearance.branchColorAttribute="User selection";
+	set appearance.branchColorGradient=false;
+	set appearance.branchLineWidth=1.0;
+	set appearance.branchMinLineWidth=0.0;
+	set appearance.branchWidthAttribute="Fixed";
+	set appearance.foregroundColour=#000000;
+	set appearance.hilightingGradient=false;
+	set appearance.selectionColour=#2d3680;
+	set branchLabels.colorAttribute="User selection";
+	set branchLabels.displayAttribute="Branch times";
+	set branchLabels.fontName="sansserif";
+	set branchLabels.fontSize=8;
+	set branchLabels.fontStyle=0;
+	set branchLabels.isShown=false;
+	set branchLabels.significantDigits=4;
+	set layout.expansion=0;
+	set layout.layoutType="RECTILINEAR";
+	set layout.zoom=0;
+	set legend.attribute=null;
+	set legend.fontSize=10.0;
+	set legend.isShown=false;
+	set legend.significantDigits=4;
+	set nodeBars.barWidth=4.0;
+	set nodeBars.displayAttribute=null;
+	set nodeBars.isShown=false;
+	set nodeLabels.colorAttribute="User selection";
+	set nodeLabels.displayAttribute="Node ages";
+	set nodeLabels.fontName="sansserif";
+	set nodeLabels.fontSize=8;
+	set nodeLabels.fontStyle=0;
+	set nodeLabels.isShown=true;
+	set nodeLabels.significantDigits=4;
+	set nodeShapeExternal.colourAttribute=null;
+	set nodeShapeExternal.isShown=false;
+	set nodeShapeExternal.minSize=10.0;
+	set nodeShapeExternal.scaleType=Width;
+	set nodeShapeExternal.shapeType=Circle;
+	set nodeShapeExternal.size=4.0;
+	set nodeShapeExternal.sizeAttribute=null;
+	set nodeShapeInternal.colourAttribute=null;
+	set nodeShapeInternal.isShown=false;
+	set nodeShapeInternal.minSize=10.0;
+	set nodeShapeInternal.scaleType=Width;
+	set nodeShapeInternal.shapeType=Circle;
+	set nodeShapeInternal.size=4.0;
+	set nodeShapeInternal.sizeAttribute=null;
+	set polarLayout.alignTipLabels=false;
+	set polarLayout.angularRange=0;
+	set polarLayout.rootAngle=0;
+	set polarLayout.rootLength=100;
+	set polarLayout.showRoot=true;
+	set radialLayout.spread=0.0;
+	set rectilinearLayout.alignTipLabels=false;
+	set rectilinearLayout.curvature=0;
+	set rectilinearLayout.rootLength=100;
+	set scale.offsetAge=0.0;
+	set scale.rootAge=1.0;
+	set scale.scaleFactor=1.0;
+	set scale.scaleRoot=false;
+	set scaleAxis.automaticScale=true;
+	set scaleAxis.fontSize=8.0;
+	set scaleAxis.isShown=false;
+	set scaleAxis.lineWidth=1.0;
+	set scaleAxis.majorTicks=1.0;
+	set scaleAxis.minorTicks=0.5;
+	set scaleAxis.origin=0.0;
+	set scaleAxis.reverseAxis=false;
+	set scaleAxis.showGrid=true;
+	set scaleBar.automaticScale=true;
+	set scaleBar.fontSize=10.0;
+	set scaleBar.isShown=true;
+	set scaleBar.lineWidth=1.0;
+	set scaleBar.scaleRange=0.0;
+	set tipLabels.colorAttribute="User selection";
+	set tipLabels.displayAttribute="Names";
+	set tipLabels.fontName="sansserif";
+	set tipLabels.fontSize=8;
+	set tipLabels.fontStyle=0;
+	set tipLabels.isShown=true;
+	set tipLabels.significantDigits=4;
+	set trees.order=false;
+	set trees.orderType="increasing";
+	set trees.rooting=false;
+	set trees.rootingType="User Selection";
+	set trees.transform=false;
+	set trees.transformType="cladogram";
+end;
+
